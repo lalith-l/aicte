@@ -1,0 +1,180 @@
+# AICTE Approval Process Handbook — Rules Register
+# ALL CLAUSE REFERENCES AND HANDBOOK NUMBERS ARE KEPT AS "PLACEHOLDER" FOR HUMAN REVIEW.
+# Rules with PLACEHOLDER clause references cannot be set to ACTIVE or used to reject applications.
+
+version: "2025-26.1"
+synthetic: true
+last_modified_by: "system_init"
+
+norms:
+  - id: "R01_land_area_requirement"
+    name: "Minimum Land Area Requirement"
+    clause_ref: "PLACEHOLDER"
+    handbook_section: "PLACEHOLDER"
+    category: "Land & Infrastructure"
+    status: "DRAFT_PLACEHOLDER"
+    severity: "MUST"
+    owner: "Approval Bureau (Infrastructure)"
+    description: "Institution must possess contiguous land meeting or exceeding handbook minimums."
+    parameters:
+      min_acres: "PLACEHOLDER"
+
+  - id: "R02_built_up_area_requirement"
+    name: "Instructional and Administrative Built-up Area"
+    clause_ref: "PLACEHOLDER"
+    handbook_section: "PLACEHOLDER"
+    category: "Land & Infrastructure"
+    status: "DRAFT_PLACEHOLDER"
+    severity: "MUST"
+    owner: "Approval Bureau (Infrastructure)"
+    description: "Built-up area must meet norms for sanctioned student intake."
+    parameters:
+      min_sqm: "PLACEHOLDER"
+
+  - id: "R03_affidavit_notary_date"
+    name: "Affidavit and Stamp Paper Chronology"
+    clause_ref: "PLACEHOLDER"
+    handbook_section: "PLACEHOLDER"
+    category: "Legal & Governance"
+    status: "DRAFT_PLACEHOLDER"
+    severity: "MUST"
+    owner: "Legal Cell"
+    description: "Affidavit notarization date cannot precede stamp paper purchase date."
+    parameters: {}
+
+  - id: "R04_faculty_student_ratio"
+    name: "Cadre Faculty to Student Ratio"
+    clause_ref: "PLACEHOLDER"
+    handbook_section: "PLACEHOLDER"
+    category: "Academic & Faculty"
+    status: "DRAFT_PLACEHOLDER"
+    severity: "MUST"
+    owner: "Academic Bureau"
+    description: "Full-time faculty cadre must meet prescribed student ratio."
+    parameters:
+      cadre_ratio: "PLACEHOLDER"
+
+  - id: "R05_trust_deed_purpose"
+    name: "Trust Deed Technical Education Clause"
+    clause_ref: "PLACEHOLDER"
+    handbook_section: "PLACEHOLDER"
+    category: "Legal & Governance"
+    status: "DRAFT_PLACEHOLDER"
+    severity: "MUST"
+    owner: "Legal Cell"
+    description: "Trust deed objects clause must explicitly empower establishing technical institutions."
+    parameters: {}
+
+  - id: "R06_fdr_corpus_fund"
+    name: "Security Deposit / Fixed Deposit Receipt (FDR)"
+    clause_ref: "PLACEHOLDER"
+    handbook_section: "PLACEHOLDER"
+    category: "Finance & Accounts"
+    status: "DRAFT_PLACEHOLDER"
+    severity: "MUST"
+    owner: "Finance Bureau"
+    description: "FDR must be held jointly in the name of Trust and AICTE for specified maturity."
+    parameters:
+      min_amount_inr: "PLACEHOLDER"
+
+  - id: "R07_fire_safety_noc_validity"
+    name: "Fire Safety Certificate Validity"
+    clause_ref: "PLACEHOLDER"
+    handbook_section: "PLACEHOLDER"
+    category: "Safety & Compliance"
+    status: "DRAFT_PLACEHOLDER"
+    severity: "MUST"
+    owner: "Safety Inspection Bureau"
+    description: "Fire safety NOC issued by competent state authority must be valid for the academic year."
+    parameters: {}
+
+  - id: "R08_state_noc_academic_year"
+    name: "State Government NOC for New Programs"
+    clause_ref: "PLACEHOLDER"
+    handbook_section: "PLACEHOLDER"
+    category: "Regulatory Affiliation"
+    status: "DRAFT_PLACEHOLDER"
+    severity: "MUST"
+    owner: "Approval Bureau"
+    description: "State Government No-Objection Certificate must cover the applied academic year."
+    parameters: {}
+
+  - id: "R09_pan_checksum_validity"
+    name: "Authorized Signatory PAN Integrity"
+    clause_ref: "PLACEHOLDER"
+    handbook_section: "PLACEHOLDER"
+    category: "Identity & Verification"
+    status: "DRAFT_PLACEHOLDER"
+    severity: "MUST"
+    owner: "Scrutiny Team"
+    description: "Signatory PAN format and 4th letter entity code must conform to CBDT structure."
+    parameters: {}
+
+  - id: "R10_intake_portal_conformance"
+    name: "Portal Intake Reconciliation"
+    clause_ref: "PLACEHOLDER"
+    handbook_section: "PLACEHOLDER"
+    category: "Data Integrity"
+    status: "DRAFT_PLACEHOLDER"
+    severity: "MUST"
+    owner: "Scrutiny Team"
+    description: "Declared application intake must exactly match AICTE portal master record."
+    parameters: {}
+
+  - id: "R11_required_document_checklist"
+    name: "Required Document Checklist"
+    clause_ref: "PLACEHOLDER"
+    handbook_section: "PLACEHOLDER"
+    category: "Document Completeness"
+    status: "DRAFT_PLACEHOLDER"
+    severity: "MUST"
+    owner: "Scrutiny Team"
+    description: "Every required document type for the declared category must be present."
+    parameters:
+      checklist: "PLACEHOLDER"
+
+  - id: "R12_document_expiry"
+    name: "Statutory Certificate Validity Window"
+    clause_ref: "PLACEHOLDER"
+    handbook_section: "PLACEHOLDER"
+    category: "Safety & Compliance"
+    status: "DRAFT_PLACEHOLDER"
+    severity: "MUST"
+    owner: "Scrutiny Team"
+    description: "Validity periods for NOC / fire / affiliation are PLACEHOLDER until a person fills the handbook."
+    parameters:
+      validity_days: "PLACEHOLDER"
+
+  - id: "R13_digital_signature_required"
+    name: "Digital Signature Where Required"
+    clause_ref: "PLACEHOLDER"
+    handbook_section: "PLACEHOLDER"
+    category: "Legal & Governance"
+    status: "DRAFT_PLACEHOLDER"
+    severity: "MUST"
+    owner: "Legal Cell"
+    description: "Unsigned affidavits and trust deeds evaluate UNKNOWN until signature requirements are filled."
+    parameters: {}
+
+  - id: "R14_name_consistency"
+    name: "Cross-Document Institution Name Consistency"
+    clause_ref: "PLACEHOLDER"
+    handbook_section: "PLACEHOLDER"
+    category: "Data Integrity"
+    status: "DRAFT_PLACEHOLDER"
+    severity: "MUST"
+    owner: "Scrutiny Team"
+    description: "Normalised names must match across trust deed, affidavit and portal record. Cut-offs are PLACEHOLDER."
+    parameters:
+      name_match_cutoff: "PLACEHOLDER"
+
+  - id: "R15_unreadable_scan_unknown"
+    name: "Unreadable or Dual-Extractor Disagreement"
+    clause_ref: "PLACEHOLDER"
+    handbook_section: "PLACEHOLDER"
+    category: "Extraction Quality"
+    status: "DRAFT_PLACEHOLDER"
+    severity: "MUST"
+    owner: "Pipeline"
+    description: "Extractor disagreement is UNKNOWN and never a rejection."
+    parameters: {}
