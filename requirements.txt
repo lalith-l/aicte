@@ -1,6 +1,5 @@
 # AICTE Validator — Python Dependencies
-# Install: pip install -r requirements.txt
-# All versions to be pinned after install with: pip freeze > requirements.txt
+# All data is synthetic.
 
 # Core web framework
 fastapi>=0.104.0
@@ -19,43 +18,30 @@ argon2-cffi>=23.1.0
 cryptography>=41.0.0
 slowapi>=0.1.9
 
-# Document processing
-pymupdf>=1.23.0
-pdfplumber>=0.10.0
-pikepdf>=8.7.0
-pyhanko>=0.20.0
-pytesseract>=0.3.10
-qrcode>=7.4.2
-Pillow>=10.1.0
-weasyprint>=60.0
-
-# Data processing
-numpy>=1.26.0
-scipy>=1.11.0
-pandas>=2.1.0
-scikit-learn>=1.3.0
-statsmodels>=0.14.0
-
-# Text & validation
-rapidfuzz>=3.5.0
-unidecode>=1.3.7
-faker>=20.0.0
-
 # Utilities
 psutil>=5.9.0
 httpx>=0.25.0
 python-dotenv>=1.0.0
+qrcode>=7.4.2
+Pillow>=10.1.0
+rapidfuzz>=3.5.0
+unidecode>=1.3.7
+faker>=20.0.0
+numpy>=1.26.0
 
 # Testing
 pytest>=7.4.0
 pytest-asyncio>=0.21.0
-hypothesis>=6.92.0
 
-# Document augmentation (optional — for synthetic data generation)
-# augraphy>=8.1.0
-# Note: augraphy has heavy dependencies, install separately if needed
-
-# Vision models (optional — for Tier 3 detectors)
-# torch>=2.1.0
-# transformers>=4.35.0
-# Note: Install torch with CPU-only: pip install torch --index-url https://download.pytorch.org/whl/cpu
+# --- Heavy optional deps (uncomment locally only) ---
+# pymupdf>=1.23.0
+# pdfplumber>=0.10.0
+# pikepdf>=8.7.0
+# pyhanko>=0.20.0
+# pytesseract>=0.3.10
+# weasyprint>=60.0
+# scipy>=1.11.0
+# pandas>=2.1.0
+# scikit-learn>=1.3.0
+# statsmodels>=0.14.0
+# hypothesis>=6.92.0

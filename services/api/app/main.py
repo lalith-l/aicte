@@ -5,9 +5,11 @@ All data is synthetic — every payload says so.
 
 from __future__ import annotations
 
+import logging
 import os
 import sys
 from pathlib import Path
+from urllib.parse import urlparse
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
 
@@ -36,29 +38,60 @@ from services.api.app.routes import (
     verification,
 )
 
+log = logging.getLogger("aicte.main")
+
 DEMO_MODE = os.environ.get("AICTE_DEMO_MODE", "1") == "1"
 ROLES = ["app_api", "app_det", "app_model", "app_monitor", "app_readonly"]
 
+# Render / production: single DATABASE_URL takes precedence over per-role local pools
+_DATABASE_URL = os.environ.get("DATABASE_URL", "")
 
-def _create_pool(role: str, minconn: int = 1, maxconn: int = 10):
-    return psycopg2.pool.ThreadedConnectionPool(
-        minconn,
-        maxconn,
-        dbname=DB_NAME,
-        user=role,
-        password=f"{role}_dev",
-        host=PG_HOST,
+
+def _parse_database_url(url: str) -> dict:
+    """Parse postgres://user:pass@host:port/dbname into psycopg2 kwargs."""
+    p = urlparse(url)
+    kwargs = dict(
+        dbname=p.path.lstrip("/"),
+        user=p.username,
+        password=p.password,
+        host=p.hostname,
+        port=p.port or 5432,
+        sslmode="require",
     )
+    return {k: v for k, v in kwargs.items() if v is not None}
+
+
+def _create_pool(role: str, minconn: int = 1, maxconn: int = 5):
+    if _DATABASE_URL:
+        # Render / production: all roles share the single provided connection
+        kwargs = _parse_database_url(_DATABASE_URL)
+    else:
+        # Local dev: connect with per-role PostgreSQL users
+        kwargs = dict(
+            dbname=DB_NAME,
+            user=role,
+            password=f"{role}_dev",
+            host=PG_HOST,
+        )
+    return psycopg2.pool.ThreadedConnectionPool(minconn, maxconn, **kwargs)
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     ensure_dirs()
-    app.state.pools = {r: _create_pool(r) for r in ROLES}
+    try:
+        app.state.pools = {r: _create_pool(r) for r in ROLES}
+        log.info("DB connection pools initialised (%d roles)", len(ROLES))
+    except Exception as exc:
+        log.warning("DB pool creation failed: %s — running in limited/demo mode.", exc)
+        app.state.pools = {}
     app.state.demo_mode = DEMO_MODE
     yield
     for pool in app.state.pools.values():
-        pool.closeall()
+        try:
+            pool.closeall()
+        except Exception:
+            pass
 
 
 app = FastAPI(
@@ -68,14 +101,21 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+# CORS — local dev origins + any *.onrender.com deploy
+_FRONTEND_URL = os.environ.get("FRONTEND_URL", "")
+_ALLOWED_ORIGINS = [
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+    "http://localhost:4173",
+    "http://127.0.0.1:4173",
+]
+if _FRONTEND_URL:
+    _ALLOWED_ORIGINS.append(_FRONTEND_URL)
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:5173",
-        "http://127.0.0.1:5173",
-        "http://localhost:4173",
-        "http://127.0.0.1:4173",
-    ],
+    allow_origins=_ALLOWED_ORIGINS,
+    allow_origin_regex=r"https://.*\.onrender\.com",
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE"],
     allow_headers=["Authorization", "Content-Type"],
