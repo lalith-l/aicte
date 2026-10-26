@@ -26,7 +26,7 @@ from typing import Protocol
 
 import psutil
 
-PROJECT_ROOT = "/Users/lalithkumargn/Desktop/aicte"
+PROJECT_ROOT = os.environ.get("PROJECT_ROOT", str(Path(__file__).resolve().parents[2]))
 
 # Paths the sandbox MUST NOT read
 DENIED_READ_PATHS = [

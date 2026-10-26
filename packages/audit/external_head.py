@@ -18,7 +18,8 @@ from typing import Optional, Tuple
 
 import psycopg2
 
-EXTERNAL_HEAD_DIR = Path("/Users/lalithkumargn/Desktop/aicte/data/mail")
+_PROJECT_ROOT = Path(os.environ.get("PROJECT_ROOT", Path(__file__).resolve().parents[2]))
+EXTERNAL_HEAD_DIR = _PROJECT_ROOT / "data" / "mail"
 EXTERNAL_HEAD_DIR.mkdir(parents=True, exist_ok=True)
 
 

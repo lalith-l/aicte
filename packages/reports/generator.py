@@ -26,7 +26,8 @@ from pydantic import BaseModel, Field
 
 import qrcode
 
-REPORTS_DIR = Path("/Users/lalithkumargn/Desktop/aicte/data/storage/reports")
+_PROJECT_ROOT = Path(os.environ.get("PROJECT_ROOT", Path(__file__).resolve().parents[2]))
+REPORTS_DIR = _PROJECT_ROOT / "data" / "storage" / "reports"
 REPORTS_DIR.mkdir(parents=True, exist_ok=True)
 
 
