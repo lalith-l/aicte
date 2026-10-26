@@ -4,7 +4,13 @@
  * Gracefully falls back to seeded data when API unavailable.
  */
 
-export const API_BASE = import.meta.env.VITE_API_BASE ?? "";
+// In production (Render), VITE_API_URL points to the backend service.
+// In local dev, API calls go through the Vite proxy (empty base = relative URL).
+export const API_BASE =
+  import.meta.env.VITE_API_URL ??
+  import.meta.env.VITE_API_BASE ??
+  "";
+
 
 export function getToken(): string | null {
   return localStorage.getItem("aicte_token");
