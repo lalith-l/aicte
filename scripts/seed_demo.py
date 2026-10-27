@@ -156,10 +156,24 @@ INSERT INTO reviewer_notes (application_id, note_text, note_hash, user_id) VALUE
 ON CONFLICT DO NOTHING;
 
 -- ============================================================
--- Initial audit entries
+-- Audit trail: covers PS list events end-to-end for one application
 -- ============================================================
 SELECT audit_append('system', 'seed_demo', '{{"action": "database_seeded", "sunrise_application": "bbbb0001-0001-0001-0001-000000000001", "synthetic_data": true}}'::jsonb);
 SELECT audit_append('system', 'seed_demo', '{{"action": "demo_users_created", "user_count": 7, "synthetic_data": true}}'::jsonb);
+SELECT audit_append('system', 'ingest_gate', '{{"action": "document_ingested", "application_id": "bbbb0001-0001-0001-0001-000000000001", "document_id": "cccc0001-0001-0001-0001-000000000001", "type": "trust_deed", "sha256_ok": true}}'::jsonb);
+SELECT audit_append('system', 'ingest_gate', '{{"action": "document_ingested", "application_id": "bbbb0001-0001-0001-0001-000000000001", "document_id": "cccc0002-0002-0002-0002-000000000002", "type": "affidavit", "sha256_ok": true}}'::jsonb);
+SELECT audit_append('system', 'ingest_gate', '{{"action": "document_ingested", "application_id": "bbbb0001-0001-0001-0001-000000000001", "document_id": "cccc0003-0003-0003-0003-000000000003", "type": "stamp_paper", "sha256_ok": true}}'::jsonb);
+SELECT audit_append('system', 'extractor', '{{"action": "extraction_complete", "application_id": "bbbb0001-0001-0001-0001-000000000001", "document_id": "cccc0002-0002-0002-0002-000000000002", "fields_extracted": ["affidavit_date", "signatory_name"], "extractor": "pdfplumber"}}'::jsonb);
+SELECT audit_append('system', 'extractor', '{{"action": "extraction_complete", "application_id": "bbbb0001-0001-0001-0001-000000000001", "document_id": "cccc0003-0003-0003-0003-000000000003", "fields_extracted": ["stamp_paper_date", "stamp_paper_value"], "extractor": "pdfplumber"}}'::jsonb);
+SELECT audit_append('system', 'rules_engine', '{{"action": "rule_applied", "application_id": "bbbb0001-0001-0001-0001-000000000001", "rule_id": "R-D04", "result": "FALSE", "reason": "affidavit_date < stamp_paper_date", "clause_ref": "PLACEHOLDER"}}'::jsonb);
+SELECT audit_append('system', 'rules_engine', '{{"action": "rule_applied", "application_id": "bbbb0001-0001-0001-0001-000000000001", "rule_id": "R-D13", "result": "UNKNOWN", "reason": "issuer_endpoint_503", "clause_ref": "PLACEHOLDER"}}'::jsonb);
+SELECT audit_append('system', 'issuer_connector', '{{"action": "source_queried", "application_id": "bbbb0001-0001-0001-0001-000000000001", "issuer": "State Government of Karnataka", "route": "reference_lookup", "http_status": 503, "result": "SOURCE_UNAVAILABLE"}}'::jsonb);
+SELECT audit_append('system', 'alert_engine', '{{"action": "alert_raised", "application_id": "bbbb0001-0001-0001-0001-000000000001", "alert_type": "SOURCE_OUTAGE", "severity": "medium", "message": "NOC issuer 503"}}'::jsonb);
+SELECT audit_append('system', 'alert_engine', '{{"action": "alert_raised", "application_id": "bbbb0001-0001-0001-0001-000000000001", "alert_type": "FINDING_RAISED", "severity": "high", "message": "D04 date inconsistency"}}'::jsonb);
+SELECT audit_append('officer_raj', 'review_assigned', '{{"action": "review_assigned", "application_id": "bbbb0001-0001-0001-0001-000000000001", "review_item_id": "eeee0001-0001-0001-0001-000000000001", "level": 2}}'::jsonb);
+SELECT audit_append('officer_raj', 'pii_reveal', '{{"action": "pii_reveal", "application_id": "bbbb0001-0001-0001-0001-000000000001", "field": "pan_number", "masked_value": "AAAC****4A", "purpose": "identity_verification"}}'::jsonb);
+SELECT audit_append('officer_raj', 'observation_recorded', '{{"action": "observation_recorded", "application_id": "bbbb0001-0001-0001-0001-000000000001", "finding_id": "dddd0001-0001-0001-0001-000000000001", "observation": "Date conflict confirmed on physical review"}}'::jsonb);
+SELECT audit_append('system', 'portal_record_checked', '{{"action": "portal_record_checked", "application_id": "bbbb0001-0001-0001-0001-000000000001", "portal": "AICTE_PORTAL", "institution_code": "SUNRISE-001", "match": true}}'::jsonb);
 
 INSERT INTO review_items (id, application_id, level, reason, assignee, state) VALUES
     ('eeee0001-0001-0001-0001-000000000001', 'bbbb0001-0001-0001-0001-000000000001', 2, 'Sunrise D04+D13', 'aaaa0002-0002-0002-0002-000000000002', 'assigned')

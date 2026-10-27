@@ -8,7 +8,8 @@ import { api, API_BASE, getToken } from '../api/client'
 interface DisplayAlert extends Alert {
   isSeeded?: boolean
   latency_ms?: number
-  delivered_at?: string
+  _logged_ts?: number
+  _delivered_ts?: number
 }
 
 const SEEDED: DisplayAlert[] = [
@@ -21,8 +22,6 @@ const SEEDED: DisplayAlert[] = [
     severity: 'high',
     created_at: '2025-03-15T10:05:00Z',
     isSeeded: true,
-    latency_ms: 38,
-    delivered_at: '10:05:01',
   },
   {
     id: 'al2',
@@ -33,8 +32,6 @@ const SEEDED: DisplayAlert[] = [
     severity: 'medium',
     created_at: '2025-03-15T10:30:00Z',
     isSeeded: true,
-    latency_ms: 42,
-    delivered_at: '10:30:02',
   },
   {
     id: 'al3',
@@ -45,30 +42,33 @@ const SEEDED: DisplayAlert[] = [
     severity: 'low',
     created_at: '2025-03-16T11:15:00Z',
     isSeeded: true,
-    latency_ms: 29,
-    delivered_at: '11:15:01',
   },
 ]
 
 export default function Alerts() {
   const { data, loading, error, reload } = useApi<{ alerts: Alert[] }>(() => api.get('/api/alerts'), [])
   const [live, setLive] = useState<DisplayAlert[]>([])
+  const [sseConnected, setSseConnected] = useState(false)
 
   useEffect(() => {
     const token = getToken()
     const qs = token ? `?token=${encodeURIComponent(token)}` : ''
     const url = `${API_BASE}/api/alerts/stream${qs}`
     const es = new EventSource(url, { withCredentials: true })
+    es.onopen = () => setSseConnected(true)
+    es.onerror = () => setSseConnected(false)
     es.onmessage = (ev) => {
       try {
         const row = JSON.parse(ev.data)
         if (row.id) {
-          const now = new Date()
+          const loggedTs = new Date(row.created_at).getTime()
+          const deliveredTs = Date.now()
           const alertItem: DisplayAlert = {
             ...row,
             severity: row.severity || 'medium',
-            latency_ms: Math.floor(Math.random() * 30) + 20,
-            delivered_at: now.toTimeString().split(' ')[0],
+            _logged_ts: loggedTs,
+            _delivered_ts: deliveredTs,
+            latency_ms: deliveredTs - loggedTs > 0 ? deliveredTs - loggedTs : undefined,
           }
           setLive((prev) => [alertItem, ...prev].slice(0, 30))
         }
@@ -80,8 +80,7 @@ export default function Alerts() {
 
   const apiAlerts: DisplayAlert[] = (data?.alerts || []).map(a => ({
     ...a,
-    latency_ms: 35,
-    delivered_at: new Date(a.created_at).toTimeString().split(' ')[0],
+    _logged_ts: new Date(a.created_at).getTime(),
   }))
 
   const alerts = [...live, ...(apiAlerts.length ? apiAlerts : SEEDED)]
@@ -103,18 +102,18 @@ export default function Alerts() {
               Real-time SSE event stream for validation anomalies, issuer outages, and high-risk findings.
             </p>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: 'var(--green)' }}>
-            <span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--green)', display: 'inline-block' }} />
-            SSE Stream Connected
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: sseConnected ? 'var(--green)' : 'var(--text-muted)' }}>
+            <span style={{ width: 8, height: 8, borderRadius: '50%', background: sseConnected ? 'var(--green)' : 'var(--text-muted)', display: 'inline-block' }} />
+            {sseConnected ? 'SSE Stream Connected' : 'SSE Stream Offline'}
           </div>
         </div>
       </div>
 
       {loading && !data && <LoadingSpinner label="Loading alerts…" />}
 
-      {error && !data && (
+      {!sseConnected && !loading && (
         <div style={{ padding: 12, background: 'rgba(245,158,11,0.08)', borderRadius: 8, fontSize: 12, color: 'var(--amber)' }}>
-          ⚠ API stream offline — displaying seeded synthetic telemetry
+          ⚠ SSE stream offline — displaying seeded synthetic telemetry
         </div>
       )}
 
@@ -156,10 +155,18 @@ export default function Alerts() {
                 <span>{a.institution_name}</span>
                 <span>·</span>
                 <span>Logged: {new Date(a.created_at).toLocaleString('en-IN')}</span>
-                <span>·</span>
-                <span>Delivered: {a.delivered_at || 'realtime'}</span>
-                <span>·</span>
-                <span style={{ color: 'var(--text-secondary)' }}>Latency: {a.latency_ms ?? 42}ms</span>
+                {a._delivered_ts && (
+                  <>
+                    <span>·</span>
+                    <span>Delivered: {new Date(a._delivered_ts).toLocaleString('en-IN')}</span>
+                  </>
+                )}
+                {a.latency_ms !== undefined && (
+                  <>
+                    <span>·</span>
+                    <span style={{ color: 'var(--text-secondary)' }}>Latency: {a.latency_ms}ms</span>
+                  </>
+                )}
               </div>
             </div>
 

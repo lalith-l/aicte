@@ -257,8 +257,8 @@ const SEEDED_FINDINGS_PINNACLE: Finding[] = [
     source_code: 'D09',
     tier: 2,
     result: 'FALSE',
-    reason: 'Declared land area is 5.0 acres, but verified municipal land registry indicates only 3.8 acres. Deficit of 1.2 acres violates AICTE norm for engineering campus.',
-    recheck_recipe: 'Request certified demarcation map from Revenue Inspector and re-verify survey 142/3B.',
+    reason: '[DEMO SEED] Declared land area is 5.0 acres (from submitted land certificate). Verified municipal land registry indicates 3.8 acres for survey 142/3B. Deficit of 1.2 acres. Note: the 5.0-acre figure is the institution\'s own declaration; no AICTE norm threshold is active (all norms are PLACEHOLDER). This discrepancy is flagged for officer review, not automatic rejection.',
+    recheck_recipe: 'Request certified demarcation map from Revenue Inspector and re-verify survey 142/3B against submitted land certificate.',
     clause_ref: 'PLACEHOLDER',
     evidence: {
       documents: ['cccc0032-0032-0032-0032-000000000032'],

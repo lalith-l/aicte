@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import type { Finding } from '../types'
-import FindingCard from '../components/FindingCard'
 import LoadingSpinner from '../components/LoadingSpinner'
 import { useApi } from '../hooks/useApi'
 import { api } from '../api/client'
@@ -13,6 +12,53 @@ interface ConsentItem {
   expires_at: string
   revoked_at?: string | null
   created_at?: string
+}
+
+// Institution-facing finding: no tier codes, no defect codes, amber guidance only
+function InstitutionFindingRow({ finding, onRectify }: { finding: Finding; note: string; onNoteChange: (v: string) => void; onRectify: () => void }) {
+  const [note, setNote] = useState('')
+  const clearanceGuide: Record<string, string> = {
+    D04: 'Upload a fresh affidavit executed on or after the stamp paper purchase date.',
+    D09: 'Submit a certified demarcation map from the Revenue Inspector confirming the campus area.',
+    D02: 'Obtain a renewed Fire & Safety NOC from the State Disaster & Fire Services Department.',
+    D13: 'The issuer portal is temporarily unavailable. No action needed — this will be re-checked automatically.',
+  }
+  const guidance = clearanceGuide[finding.source_code] ||
+    (finding.recheck_recipe ? `To clear this item: ${finding.recheck_recipe}` : 'Contact the scrutiny officer for guidance on clearing this item.')
+
+  return (
+    <div className="card" style={{ padding: 16, borderLeft: '3px solid var(--amber)' }}>
+      <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 6 }}>
+        {finding.source_code === 'D13' ? 'Issuer verification pending' :
+         finding.source_code === 'D04' ? 'Document date inconsistency' :
+         finding.source_code === 'D09' ? 'Land area discrepancy' :
+         finding.source_code === 'D02' ? 'Certificate expired' :
+         'Document requires attention'}
+      </div>
+      <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginBottom: 10, lineHeight: 1.5 }}>
+        {finding.reason.replace(/\[DEMO SEED\]\s*/i, '')}
+      </div>
+      <div style={{ padding: '8px 12px', background: 'rgba(245,158,11,0.08)', border: '1px solid rgba(245,158,11,0.25)', borderRadius: 6, fontSize: 12, color: 'var(--amber)', marginBottom: 12 }}>
+        <strong>To clear this item:</strong> {guidance}
+      </div>
+      <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+        <input
+          className="input"
+          placeholder="Enter rectification note / reference number…"
+          value={note}
+          onChange={e => setNote(e.target.value)}
+          style={{ flex: 1 }}
+        />
+        <button
+          className="btn btn--primary"
+          style={{ fontSize: 12, whiteSpace: 'nowrap' }}
+          onClick={onRectify}
+        >
+          Submit Rectification
+        </button>
+      </div>
+    </div>
+  )
 }
 
 const AVAILABLE_DOCS = [
@@ -272,25 +318,13 @@ export default function InstitutionPortal() {
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           {items.map(f => (
-            <div key={f.id} className="card" style={{ padding: 16 }}>
-              <FindingCard finding={{ ...f, application_id: f.application_id || '' }} />
-              <div style={{ marginTop: 12, paddingTop: 12, borderTop: '1px solid var(--border)', display: 'flex', gap: 10, alignItems: 'center' }}>
-                <input
-                  className="input"
-                  placeholder="Enter rectification note / reference number…"
-                  value={rectifyNotes[f.id] || ''}
-                  onChange={e => setRectifyNotes(prev => ({ ...prev, [f.id]: e.target.value }))}
-                  style={{ flex: 1 }}
-                />
-                <button
-                  className="btn btn--primary"
-                  style={{ fontSize: 12, whiteSpace: 'nowrap' }}
-                  onClick={() => handleRectify(f.id)}
-                >
-                  Submit Rectification
-                </button>
-              </div>
-            </div>
+            <InstitutionFindingRow
+              key={f.id}
+              finding={{ ...f, application_id: f.application_id || '' }}
+              note={rectifyNotes[f.id] || ''}
+              onNoteChange={v => setRectifyNotes(prev => ({ ...prev, [f.id]: v }))}
+              onRectify={() => handleRectify(f.id)}
+            />
           ))}
         </div>
       </div>

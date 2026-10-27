@@ -6,6 +6,8 @@ __pycache__/
 *.so
 .Python
 .venv/
+.venv.nosync/
+.venv 2/
 venv/
 env/
 pip-log.txt
@@ -25,7 +27,11 @@ coverage.xml
 node_modules/
 web/dist/
 web/.vite/
+web/tsconfig.tsbuildinfo
 *.local
+
+# Secrets
+secrets/
 
 # Environment / secrets
 .env

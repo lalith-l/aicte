@@ -48,6 +48,12 @@ export function tierClass(t: number): string {
   return `chip--tier${t}`;
 }
 
+export function stageLabel(s: string): string {
+  if (s === 'APPROVED') return 'OFFICER APPROVED'
+  if (s === 'REJECTED') return 'OFFICER REJECTED'
+  return s.replace(/_/g, ' ')
+}
+
 export default function StatusChip({
   status,
   small,
@@ -60,7 +66,7 @@ export default function StatusChip({
       className={`chip ${chipClass(status)}`}
       style={small ? { fontSize: 10, padding: "2px 8px" } : {}}
     >
-      {String(status).replace(/_/g, " ")}
+      {stageLabel(String(status))}
     </span>
   );
 }

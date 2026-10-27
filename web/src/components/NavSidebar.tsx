@@ -10,10 +10,11 @@ interface NavItem {
 const NAV_ITEMS: NavItem[] = [
   { path: '#/applications', label: 'Applications', icon: '📋', roles: ['scrutiny_officer', 'supervisor'] },
   { path: '#/review-queue', label: 'Review Queue', icon: '🔍', roles: ['scrutiny_officer', 'supervisor'] },
-  { path: '#/alerts', label: 'Alerts', icon: '🔔', roles: ['scrutiny_officer', 'supervisor', 'sysadmin', 'auditor'] },
-  { path: '#/auditor', label: 'Auditor View', icon: '🔒', roles: ['auditor', 'sysadmin'] },
-  { path: '#/rules', label: 'Rules Admin', icon: '📐', roles: ['rules_admin', 'sysadmin'] },
+  { path: '#/alerts', label: 'Alerts', icon: '🔔', roles: ['scrutiny_officer', 'supervisor', 'auditor'] },
+  { path: '#/auditor', label: 'Auditor View', icon: '🔒', roles: ['auditor'] },
+  { path: '#/rules', label: 'Rules Admin', icon: '📐', roles: ['rules_admin'] },
   { path: '#/portal', label: 'Institution Portal', icon: '🏛', roles: ['institution_user'] },
+  { path: '#/auditor', label: 'System Health', icon: '🖥', roles: ['sysadmin'] },
 ]
 
 interface Props {

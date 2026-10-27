@@ -51,6 +51,14 @@ export default function RulesAdmin() {
 
   async function approve(id: string) {
     setActionMsg(null)
+    const rule = rules.find(r => r.id === id)
+    if (rule && (rule.is_placeholder || rule.clause_ref === 'PLACEHOLDER')) {
+      setActionMsg({
+        text: '⛔ Blocked by Fail-Closed Gate: This rule has clause_ref = "PLACEHOLDER". A human official must enter the official AICTE handbook clause before this rule can be activated. The system will not approve placeholder rules.',
+        type: 'error',
+      })
+      return
+    }
     try {
       await api.post(`/api/rules/${id}/approve`, {})
       setActionMsg({ text: `✓ Rule ${id} approved successfully`, type: 'success' })
@@ -59,7 +67,7 @@ export default function RulesAdmin() {
       const errStr = String(e)
       if (errStr.includes('PLACEHOLDER') || errStr.includes('400')) {
         setActionMsg({
-          text: 'Blocked by Fail-Closed Gate: Rules with PLACEHOLDER clause_ref cannot be approved. A human official must input the official AICTE handbook clause.',
+          text: '⛔ Blocked by Fail-Closed Gate: Rules with PLACEHOLDER clause_ref cannot be approved. A human official must input the official AICTE handbook clause.',
           type: 'error',
         })
       } else {
@@ -340,9 +348,14 @@ export default function RulesAdmin() {
                 </button>
                 <button
                   className="btn btn--primary"
-                  style={{ fontSize: 12, padding: '6px 12px' }}
+                  style={{
+                    fontSize: 12,
+                    padding: '6px 12px',
+                    opacity: (r.is_placeholder || r.clause_ref === 'PLACEHOLDER') ? 0.5 : 1,
+                    cursor: (r.is_placeholder || r.clause_ref === 'PLACEHOLDER') ? 'not-allowed' : 'pointer',
+                  }}
                   onClick={() => approve(r.id)}
-                  title="Attempt rule activation (guarded by fail-closed validator)"
+                  title={(r.is_placeholder || r.clause_ref === 'PLACEHOLDER') ? 'Cannot approve: clause_ref is PLACEHOLDER' : 'Attempt rule activation'}
                 >
                   Approve Rule
                 </button>

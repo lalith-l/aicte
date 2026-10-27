@@ -226,7 +226,13 @@ function renderFindingsStatus(app: Application) {
   )
 }
 
-const STAGES = ['All', 'SUBMITTED', 'INGESTING', 'EXTRACTING', 'UNDER_REVIEW', 'DECISION_PENDING', 'APPROVED', 'REJECTED', 'WITHDRAWN']
+const STAGES = ['All', 'SUBMITTED', 'INGESTING', 'EXTRACTING', 'UNDER_REVIEW', 'DECISION_PENDING', 'OFFICER_APPROVED', 'OFFICER_REJECTED', 'WITHDRAWN']
+
+// Map display stage labels to actual data stage values
+const STAGE_DISPLAY: Record<string, string> = {
+  OFFICER_APPROVED: 'APPROVED',
+  OFFICER_REJECTED: 'REJECTED',
+}
 const CATEGORIES = ['All', 'EOA Renewal', 'New Approval', 'Intake Enhancement']
 const SORT_OPTIONS = [
   { value: 'date_desc', label: 'Newest First' },
@@ -254,7 +260,7 @@ export default function ApplicationList({ navigate }: Props) {
     : SEEDED_APPLICATIONS
 
   const filtered = apps
-    .filter(a => stageFilter === 'All' || a.stage === stageFilter)
+    .filter(a => stageFilter === 'All' || a.stage === (STAGE_DISPLAY[stageFilter] ?? stageFilter))
     .filter(a => categoryFilter === 'All' || a.declared_category === categoryFilter)
     .filter(a => !search || (a.institution_name || '').toLowerCase().includes(search.toLowerCase()) || (a.institution_code || '').toLowerCase().includes(search.toLowerCase()))
     .sort((a, b) => {
@@ -269,7 +275,7 @@ export default function ApplicationList({ navigate }: Props) {
   const stats = {
     total: apps.length,
     underReview: apps.filter(a => a.stage === 'UNDER_REVIEW').length,
-    approved: apps.filter(a => a.stage === 'APPROVED').length,
+    closedByOfficer: apps.filter(a => a.stage === 'APPROVED' || a.stage === 'REJECTED').length,
     highRisk: apps.filter(a => (a.risk_score || 0) > 0.7).length,
   }
 
@@ -335,7 +341,7 @@ export default function ApplicationList({ navigate }: Props) {
           <div className="summary-stat__label">Under Review</div>
         </div>
         <div className="summary-stat">
-          <div className="summary-stat__value" style={{ color: 'var(--green)' }}>{stats.approved}</div>
+          <div className="summary-stat__value" style={{ color: 'var(--green)' }}>{stats.closedByOfficer}</div>
           <div className="summary-stat__label">Closed by officer</div>
         </div>
         <div className="summary-stat">

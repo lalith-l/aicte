@@ -8,9 +8,15 @@ import { api } from '../api/client'
 const SEEDED_ITEMS: ReviewItem[] = [
   { id: 'ri001', application_id: 'bbbb0001-0001-0001-0001-000000000001', institution_name: 'Sunrise Technical Institute', institution_code: 'SUNRISE-001', level: 2, status: 'ASSIGNED', assigned_to_username: 'officer_raj', created_at: '2025-03-15T10:00:00Z', category: 'EOA Renewal', findings_count: 2 },
   { id: 'ri002', application_id: 'bbbb0003-0003-0003-0003-000000000003', institution_name: 'Pinnacle College of Science', institution_code: 'PINNACLE-001', level: 3, status: 'PENDING', created_at: '2025-03-10T09:00:00Z', category: 'EOA Renewal', findings_count: 4 },
-  { id: 'ri003', application_id: 'bbbb0007-0007-0007-0007-000000000007', institution_name: 'Northstar Academy of Sciences', institution_code: 'NAS-001', level: 2, status: 'IN_REVIEW', assigned_to_username: 'supervisor_priya', created_at: '2025-03-12T13:00:00Z', category: 'EOA Renewal', findings_count: 3 },
+  // ri003 is assigned to supervisor_priya — only visible to supervisors/sysadmin
   { id: 'ri004', application_id: 'bbbb0006-0006-0006-0006-000000000006', institution_name: 'Rajendra Institute of Management', institution_code: 'RIM-001', level: 1, status: 'PENDING', created_at: '2025-03-25T16:00:00Z', category: 'New Approval', findings_count: 1 },
   { id: 'ri005', application_id: 'bbbb0002-0002-0002-0002-000000000002', institution_name: 'Horizon Engineering College', institution_code: 'HORIZON-001', level: 0, status: 'PENDING', created_at: '2025-03-20T14:30:00Z', category: 'New Approval', findings_count: 0 },
+]
+
+// Supervisor sees all items including cross-assigned
+const SEEDED_ITEMS_SUPERVISOR: ReviewItem[] = [
+  ...SEEDED_ITEMS,
+  { id: 'ri003', application_id: 'bbbb0007-0007-0007-0007-000000000007', institution_name: 'Northstar Academy of Sciences', institution_code: 'NAS-001', level: 2, status: 'IN_REVIEW', assigned_to_username: 'supervisor_priya', created_at: '2025-03-12T13:00:00Z', category: 'EOA Renewal', findings_count: 3 },
 ]
 
 const LEVEL_LABELS: Record<number, string> = {
@@ -25,6 +31,10 @@ interface Props { navigate: (path: string) => void }
 export default function ReviewQueue({ navigate }: Props) {
   const [activeLevel, setActiveLevel] = useState<0 | 1 | 2 | 3>(2)
   const [assigning, setAssigning] = useState<string | null>(null)
+  const currentUser = localStorage.getItem('aicte_username') || ''
+  const currentRole = localStorage.getItem('aicte_role') || ''
+  const isSupervisor = currentRole === 'supervisor' || currentRole === 'sysadmin'
+  const fallbackSeeded = isSupervisor ? SEEDED_ITEMS_SUPERVISOR : SEEDED_ITEMS
 
   const { data, loading, error, reload } = useApi<{ items: ReviewItem[] }>(
     () => api.get(`/api/review-queue?level=${activeLevel}`),
@@ -36,9 +46,9 @@ export default function ReviewQueue({ navigate }: Props) {
   )
 
   const items: ReviewItem[] = data?.items?.length
-    ? data.items
-    : SEEDED_ITEMS.filter((i) => i.level === activeLevel)
-  const allItems: ReviewItem[] = allData?.items?.length ? allData.items : SEEDED_ITEMS
+    ? data.items.filter(i => isSupervisor || !i.assigned_to_username || i.assigned_to_username === currentUser || i.status === 'PENDING')
+    : fallbackSeeded.filter((i) => i.level === activeLevel)
+  const allItems: ReviewItem[] = allData?.items?.length ? allData.items : fallbackSeeded
   const countByLevel = (l: number) => allItems.filter((i) => i.level === l).length
 
   async function assignToMe(itemId: string) {
