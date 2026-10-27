@@ -192,7 +192,7 @@ async def login(body: LoginRequest, request: Request, response: Response):
         row = cur.fetchone()
         if not row:
             # Burn comparable time so username enumeration by timing is harder.
-            verify_password(body.password, ph.hash("x"))
+            verify_password(body.password, _get_ph().hash("x"))
             raise HTTPException(status_code=401, detail="Invalid credentials")
 
         user_id, pw_hash, role, inst_id, failed_count, locked_until = row

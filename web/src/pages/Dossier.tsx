@@ -9,20 +9,106 @@ import CrossCheckPanel from '../components/CrossCheckPanel'
 import { useApi } from '../hooks/useApi'
 import { api } from '../api/client'
 
-const SEEDED_APP: Application = {
-  id: 'bbbb0001-0001-0001-0001-000000000001',
-  institution_id: '11111111-1111-1111-1111-111111111111',
-  institution_name: 'Sunrise Technical Institute',
-  institution_code: 'SUNRISE-001',
-  city: 'Bengaluru',
-  state: 'Karnataka',
-  declared_category: 'EOA Renewal',
-  academic_year: '2025-26',
-  stage: 'UNDER_REVIEW',
-  risk_score: 0.73,
+const SEEDED_APPS: Record<string, Application> = {
+  'bbbb0001-0001-0001-0001-000000000001': {
+    id: 'bbbb0001-0001-0001-0001-000000000001',
+    institution_id: '11111111-1111-1111-1111-111111111111',
+    institution_name: 'Sunrise Technical Institute',
+    institution_code: 'SUNRISE-001',
+    city: 'Bengaluru',
+    state: 'Karnataka',
+    declared_category: 'EOA Renewal',
+    academic_year: '2025-26',
+    stage: 'UNDER_REVIEW',
+    risk_score: 0.73,
+  },
+  'bbbb0002-0002-0002-0002-000000000002': {
+    id: 'bbbb0002-0002-0002-0002-000000000002',
+    institution_id: '22222222-2222-2222-2222-222222222222',
+    institution_name: 'Horizon Engineering College',
+    institution_code: 'HORIZON-001',
+    city: 'Chennai',
+    state: 'Tamil Nadu',
+    declared_category: 'New Approval',
+    academic_year: '2025-26',
+    stage: 'SUBMITTED',
+    risk_score: 0.21,
+  },
+  'bbbb0003-0003-0003-0003-000000000003': {
+    id: 'bbbb0003-0003-0003-0003-000000000003',
+    institution_id: '33333333-3333-3333-3333-333333333333',
+    institution_name: 'Pinnacle College of Science',
+    institution_code: 'PINNACLE-001',
+    city: 'Hyderabad',
+    state: 'Telangana',
+    declared_category: 'EOA Renewal',
+    academic_year: '2025-26',
+    stage: 'DECISION_PENDING',
+    risk_score: 0.88,
+  },
+  'bbbb0004-0004-0004-0004-000000000004': {
+    id: 'bbbb0004-0004-0004-0004-000000000004',
+    institution_id: '44444444-4444-4444-4444-444444444444',
+    institution_name: 'Greenfield Institute of Technology',
+    institution_code: 'GIT-001',
+    city: 'Pune',
+    state: 'Maharashtra',
+    declared_category: 'Intake Enhancement',
+    academic_year: '2025-26',
+    stage: 'APPROVED',
+    risk_score: 0.12,
+  },
+  'bbbb0005-0005-0005-0005-000000000005': {
+    id: 'bbbb0005-0005-0005-0005-000000000005',
+    institution_id: '55555555-5555-5555-5555-555555555555',
+    institution_name: 'Westland Engineering College',
+    institution_code: 'WEC-001',
+    city: 'Ahmedabad',
+    state: 'Gujarat',
+    declared_category: 'EOA Renewal',
+    academic_year: '2025-26',
+    stage: 'REJECTED',
+    risk_score: 0.95,
+  },
+  'bbbb0006-0006-0006-0006-000000000006': {
+    id: 'bbbb0006-0006-0006-0006-000000000006',
+    institution_id: '66666666-6666-6666-6666-666666666666',
+    institution_name: 'Rajendra Institute of Management',
+    institution_code: 'RIM-001',
+    city: 'Jaipur',
+    state: 'Rajasthan',
+    declared_category: 'New Approval',
+    academic_year: '2025-26',
+    stage: 'EXTRACTING',
+    risk_score: 0.45,
+  },
+  'bbbb0007-0007-0007-0007-000000000007': {
+    id: 'bbbb0007-0007-0007-0007-000000000007',
+    institution_id: '77777777-7777-7777-7777-777777777777',
+    institution_name: 'Northstar Academy of Sciences',
+    institution_code: 'NAS-001',
+    city: 'Kolkata',
+    state: 'West Bengal',
+    declared_category: 'EOA Renewal',
+    academic_year: '2025-26',
+    stage: 'UNDER_REVIEW',
+    risk_score: 0.62,
+  },
+  'bbbb0008-0008-0008-0008-000000000008': {
+    id: 'bbbb0008-0008-0008-0008-000000000008',
+    institution_id: '88888888-8888-8888-8888-888888888888',
+    institution_name: 'Eastern Polytechnic Institute',
+    institution_code: 'EPI-001',
+    city: 'Bhubaneswar',
+    state: 'Odisha',
+    declared_category: 'Intake Enhancement',
+    academic_year: '2025-26',
+    stage: 'INGESTING',
+    risk_score: 0.35,
+  },
 }
 
-const SEEDED_DOCS: Document[] = [
+const SEEDED_DOCS_SUNRISE: Document[] = [
   {
     id: 'cccc0001-0001-0001-0001-000000000001',
     application_id: 'bbbb0001-0001-0001-0001-000000000001',
@@ -80,7 +166,56 @@ const SEEDED_DOCS: Document[] = [
   },
 ]
 
-const SEEDED_FINDINGS: Finding[] = [
+const SEEDED_DOCS_PINNACLE: Document[] = [
+  {
+    id: 'cccc0031-0031-0031-0031-000000000031',
+    application_id: 'bbbb0003-0003-0003-0003-000000000003',
+    type_declared: 'Trust Deed',
+    page_count: 4,
+    status: 'VERIFIED',
+    extracted_fields: [
+      { field: 'Institution Name', value: 'Pinnacle College of Science', confidence: 0.99, result: 'TRUE', extractor: 'pdfplumber' },
+      { field: 'Trust Name', value: 'Pinnacle Scientific & Research Society', confidence: 0.97, result: 'TRUE', extractor: 'pdfplumber' },
+      { field: 'Registration Date', value: '2012-08-20', confidence: 0.96, result: 'TRUE', extractor: 'pdfplumber' },
+    ],
+  },
+  {
+    id: 'cccc0032-0032-0032-0032-000000000032',
+    application_id: 'bbbb0003-0003-0003-0003-000000000003',
+    type_declared: 'Land Certificate',
+    page_count: 6,
+    status: 'MISMATCH_DETECTED',
+    extracted_fields: [
+      { field: 'Declared Land Area', value: '5.0 Acres', confidence: 0.98, result: 'FALSE', extractor: 'pdfplumber' },
+      { field: 'Verified Registry Area', value: '3.8 Acres', confidence: 0.95, result: 'FALSE', extractor: 'pdfplumber' },
+      { field: 'Survey Number', value: '142/3B', confidence: 0.94, result: 'TRUE', extractor: 'pdfplumber' },
+    ],
+  },
+  {
+    id: 'cccc0033-0033-0033-0033-000000000033',
+    application_id: 'bbbb0003-0003-0003-0003-000000000003',
+    type_declared: 'Fire Safety NOC',
+    page_count: 2,
+    status: 'EXPIRED',
+    extracted_fields: [
+      { field: 'Fire NOC Expiry Date', value: '2024-12-31', confidence: 0.99, result: 'FALSE', extractor: 'pdfplumber' },
+      { field: 'Issuing Authority', value: 'Hyderabad Fire Services', confidence: 0.92, result: 'TRUE', extractor: 'pdfplumber' },
+    ],
+  },
+  {
+    id: 'cccc0034-0034-0034-0034-000000000034',
+    application_id: 'bbbb0003-0003-0003-0003-000000000003',
+    type_declared: 'Faculty Roster',
+    page_count: 8,
+    status: 'MANUAL_REVIEW_REQUIRED',
+    extracted_fields: [
+      { field: 'Total Faculty', value: '58', confidence: 0.93, result: 'UNKNOWN', extractor: 'pdfplumber' },
+      { field: 'Student-Teacher Ratio', value: '1:18.5', confidence: 0.88, result: 'UNKNOWN', extractor: 'pdfplumber' },
+    ],
+  },
+]
+
+const SEEDED_FINDINGS_SUNRISE: Finding[] = [
   {
     id: 'dddd0001-0001-0001-0001-000000000001',
     application_id: 'bbbb0001-0001-0001-0001-000000000001',
@@ -114,6 +249,124 @@ const SEEDED_FINDINGS: Finding[] = [
     },
   },
 ]
+
+const SEEDED_FINDINGS_PINNACLE: Finding[] = [
+  {
+    id: 'dddd0031-0031-0031-0031-000000000031',
+    application_id: 'bbbb0003-0003-0003-0003-000000000003',
+    source_code: 'D09',
+    tier: 2,
+    result: 'FALSE',
+    reason: 'Declared land area is 5.0 acres, but verified municipal land registry indicates only 3.8 acres. Deficit of 1.2 acres violates AICTE norm for engineering campus.',
+    recheck_recipe: 'Request certified demarcation map from Revenue Inspector and re-verify survey 142/3B.',
+    clause_ref: 'PLACEHOLDER',
+    evidence: {
+      documents: ['cccc0032-0032-0032-0032-000000000032'],
+      fields: ['land_area', 'registry_area'],
+      bounding_boxes: [
+        { doc_id: 'cccc0032-0032-0032-0032-000000000032', page: 1, x: 100, y: 220, w: 220, h: 30 },
+      ],
+    },
+  },
+  {
+    id: 'dddd0032-0032-0032-0032-000000000032',
+    application_id: 'bbbb0003-0003-0003-0003-000000000003',
+    source_code: 'D02',
+    tier: 1,
+    result: 'FALSE',
+    reason: 'Fire & Safety certificate expired on 2024-12-31 prior to application submission. A valid current certificate is statutory requirement.',
+    recheck_recipe: 'Obtain renewed Fire NOC from State Disaster & Fire Services Department.',
+    clause_ref: 'PLACEHOLDER',
+    evidence: {
+      documents: ['cccc0033-0033-0033-0033-000000000033'],
+      fields: ['fire_noc_expiry'],
+      bounding_boxes: [
+        { doc_id: 'cccc0033-0033-0033-0033-000000000033', page: 1, x: 140, y: 180, w: 190, h: 25 },
+      ],
+    },
+  },
+]
+
+function generateDefaultDocs(appId: string, instName: string): Document[] {
+  return [
+    {
+      id: `doc-1-${appId.slice(0, 8)}`,
+      application_id: appId,
+      type_declared: 'Trust Deed',
+      page_count: 4,
+      status: 'VERIFIED',
+      extracted_fields: [
+        { field: 'Institution Name', value: instName, confidence: 0.98, result: 'TRUE', extractor: 'pdfplumber' },
+        { field: 'Trust Validity', value: 'Perpetual', confidence: 0.95, result: 'TRUE', extractor: 'pdfplumber' },
+      ],
+    },
+    {
+      id: `doc-2-${appId.slice(0, 8)}`,
+      application_id: appId,
+      type_declared: 'Affidavit',
+      page_count: 2,
+      status: 'VERIFIED',
+      extracted_fields: [
+        { field: 'Execution Date', value: '2025-02-10', confidence: 0.96, result: 'TRUE', extractor: 'pdfplumber' },
+        { field: 'Authorized Signatory', value: 'Principal / Registrar', confidence: 0.94, result: 'TRUE', extractor: 'pdfplumber' },
+      ],
+    },
+    {
+      id: `doc-3-${appId.slice(0, 8)}`,
+      application_id: appId,
+      type_declared: 'Land Certificate',
+      page_count: 5,
+      status: 'VERIFIED',
+      extracted_fields: [
+        { field: 'Campus Area', value: '5.2 Acres', confidence: 0.97, result: 'TRUE', extractor: 'pdfplumber' },
+        { field: 'Land Ownership', value: 'Owned Freehold', confidence: 0.96, result: 'TRUE', extractor: 'pdfplumber' },
+      ],
+    },
+    {
+      id: `doc-4-${appId.slice(0, 8)}`,
+      application_id: appId,
+      type_declared: 'Faculty List',
+      page_count: 6,
+      status: 'VERIFIED',
+      extracted_fields: [
+        { field: 'Sanctioned Faculty', value: '48', confidence: 0.92, result: 'TRUE', extractor: 'pdfplumber' },
+      ],
+    },
+  ]
+}
+
+function generateDefaultFindings(appId: string): Finding[] {
+  return [
+    {
+      id: `finding-1-${appId.slice(0, 8)}`,
+      application_id: appId,
+      source_code: 'D10',
+      tier: 1,
+      result: 'TRUE',
+      reason: 'All verified documents match regulatory handbook thresholds with valid signatures.',
+      clause_ref: 'PLACEHOLDER',
+    },
+  ]
+}
+
+function getFallbackApp(appId: string): Application {
+  if (SEEDED_APPS[appId]) {
+    return SEEDED_APPS[appId]
+  }
+  const code = 'INST-' + appId.slice(0, 4).toUpperCase()
+  return {
+    id: appId,
+    institution_id: `inst-${appId.slice(0, 8)}`,
+    institution_name: `AICTE Technical Institution (${code})`,
+    institution_code: code,
+    city: 'Bengaluru',
+    state: 'Karnataka',
+    declared_category: 'EOA Renewal',
+    academic_year: '2025-26',
+    stage: 'UNDER_REVIEW',
+    risk_score: 0.42,
+  }
+}
 
 interface Props {
   appId: string
@@ -152,10 +405,25 @@ export default function Dossier({ appId, navigate }: Props) {
     [appId],
   )
 
-  const isSunrise = appId === 'bbbb0001-0001-0001-0001-000000000001'
-  const app = appData || (isSunrise ? SEEDED_APP : null)
-  const docs = docsData?.documents?.length ? docsData.documents : (isSunrise ? SEEDED_DOCS : [])
-  const findings = findingsData?.findings?.length ? findingsData.findings : (isSunrise ? SEEDED_FINDINGS : [])
+  const fallbackApp = getFallbackApp(appId)
+  const app = appData || fallbackApp
+
+  const fallbackDocs =
+    appId === 'bbbb0001-0001-0001-0001-000000000001'
+      ? SEEDED_DOCS_SUNRISE
+      : appId === 'bbbb0003-0003-0003-0003-000000000003'
+      ? SEEDED_DOCS_PINNACLE
+      : generateDefaultDocs(appId, app.institution_name || 'AICTE Technical Institution')
+
+  const fallbackFindings =
+    appId === 'bbbb0001-0001-0001-0001-000000000001'
+      ? SEEDED_FINDINGS_SUNRISE
+      : appId === 'bbbb0003-0003-0003-0003-000000000003'
+      ? SEEDED_FINDINGS_PINNACLE
+      : generateDefaultFindings(appId)
+
+  const docs = docsData?.documents?.length ? docsData.documents : fallbackDocs
+  const findings = findingsData?.findings?.length ? findingsData.findings : fallbackFindings
   const selectedDoc = docs.find((d) => d.id === selectedDocId) || docs[0]
   const boxes = findings.flatMap((f) => f.evidence?.bounding_boxes || [])
 

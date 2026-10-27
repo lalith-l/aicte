@@ -80,11 +80,18 @@ def _create_pool(role: str, minconn: int = 1, maxconn: int = 5):
 async def lifespan(app: FastAPI):
     ensure_dirs()
     try:
-        app.state.pools = {r: _create_pool(r) for r in ROLES}
+        pools = {r: _create_pool(r) for r in ROLES}
+        # Test that connection actually works
+        test_conn = pools["app_api"].getconn()
+        pools["app_api"].putconn(test_conn)
+        app.state.pools = pools
         log.info("DB connection pools initialised (%d roles)", len(ROLES))
     except Exception as exc:
-        log.warning("DB pool creation failed: %s — running in limited/demo mode.", exc)
-        app.state.pools = {}
+        log.warning("PostgreSQL pool creation failed: %s — activating Standalone SQLite Engine for Render/Demo.", exc)
+        from packages.common.standalone_db import init_standalone_db
+        standalone_pool = init_standalone_db()
+        app.state.pools = {r: standalone_pool for r in ROLES}
+        log.info("Standalone SQLite DB pools initialised for %d roles.", len(ROLES))
     app.state.demo_mode = DEMO_MODE
     yield
     for pool in app.state.pools.values():

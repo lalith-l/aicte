@@ -39,17 +39,16 @@ VALUES (
     '560001'
 ) ON CONFLICT (code) DO NOTHING;
 
--- Second institution for RLS demo
-INSERT INTO institutions (id, name, code, address, city, state, pin_code)
-VALUES (
-    '22222222-2222-2222-2222-222222222222',
-    'Horizon Engineering College',
-    'HORIZON-001',
-    '456 University Ave',
-    'Chennai',
-    'Tamil Nadu',
-    '600001'
-) ON CONFLICT (code) DO NOTHING;
+-- Additional institutions
+INSERT INTO institutions (id, name, code, address, city, state, pin_code) VALUES
+    ('22222222-2222-2222-2222-222222222222', 'Horizon Engineering College', 'HORIZON-001', '456 University Ave', 'Chennai', 'Tamil Nadu', '600001'),
+    ('33333333-3333-3333-3333-333333333333', 'Pinnacle College of Science', 'PINNACLE-001', '789 Knowledge Park', 'Hyderabad', 'Telangana', '500001'),
+    ('44444444-4444-4444-4444-444444444444', 'Greenfield Institute of Technology', 'GIT-001', '101 Metro Way', 'Pune', 'Maharashtra', '411001'),
+    ('55555555-5555-5555-5555-555555555555', 'Westland Engineering College', 'WEC-001', '202 Ring Road', 'Ahmedabad', 'Gujarat', '380001'),
+    ('66666666-6666-6666-6666-666666666666', 'Rajendra Institute of Management', 'RIM-001', '303 Palace Road', 'Jaipur', 'Rajasthan', '302001'),
+    ('77777777-7777-7777-7777-777777777777', 'Northstar Academy of Sciences', 'NAS-001', '404 Salt Lake', 'Kolkata', 'West Bengal', '700001'),
+    ('88888888-8888-8888-8888-888888888888', 'Eastern Polytechnic Institute', 'EPI-001', '505 Infocity', 'Bhubaneswar', 'Odisha', '751001')
+ON CONFLICT (code) DO NOTHING;
 
 -- ============================================================
 -- Demo Users (password: demo123 for all)
@@ -68,13 +67,16 @@ ON CONFLICT (username) DO NOTHING;
 -- Sunrise Application (seeded with known defects for demo)
 -- ============================================================
 INSERT INTO applications (id, institution_id, declared_category, academic_year, stage)
-VALUES (
-    'bbbb0001-0001-0001-0001-000000000001',
-    '11111111-1111-1111-1111-111111111111',
-    'eoa_renewal',
-    '2025-26',
-    'SUBMITTED'
-) ON CONFLICT DO NOTHING;
+VALUES
+    ('bbbb0001-0001-0001-0001-000000000001', '11111111-1111-1111-1111-111111111111', 'EOA Renewal', '2025-26', 'UNDER_REVIEW'),
+    ('bbbb0002-0002-0002-0002-000000000002', '22222222-2222-2222-2222-222222222222', 'New Approval', '2025-26', 'SUBMITTED'),
+    ('bbbb0003-0003-0003-0003-000000000003', '33333333-3333-3333-3333-333333333333', 'EOA Renewal', '2025-26', 'DECISION_PENDING'),
+    ('bbbb0004-0004-0004-0004-000000000004', '44444444-4444-4444-4444-444444444444', 'Intake Enhancement', '2025-26', 'APPROVED'),
+    ('bbbb0005-0005-0005-0005-000000000005', '55555555-5555-5555-5555-555555555555', 'EOA Renewal', '2025-26', 'REJECTED'),
+    ('bbbb0006-0006-0006-0006-000000000006', '66666666-6666-6666-6666-666666666666', 'New Approval', '2025-26', 'EXTRACTING'),
+    ('bbbb0007-0007-0007-0007-000000000007', '77777777-7777-7777-7777-777777777777', 'EOA Renewal', '2025-26', 'UNDER_REVIEW'),
+    ('bbbb0008-0008-0008-0008-000000000008', '88888888-8888-8888-8888-888888888888', 'Intake Enhancement', '2025-26', 'INGESTING')
+ON CONFLICT DO NOTHING;
 
 -- Documents for Sunrise application
 INSERT INTO documents (id, application_id, type_declared, file_ref, sha256, page_count) VALUES

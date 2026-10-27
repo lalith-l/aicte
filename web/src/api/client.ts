@@ -5,11 +5,18 @@
  */
 
 // In production (Render), VITE_API_URL points to the backend service.
+// If unset or pointing to a non-existent default host, auto-target live Render backend.
 // In local dev, API calls go through the Vite proxy (empty base = relative URL).
+const envUrl = (import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE || "").trim();
+const isDeadDefault = envUrl.includes("aicte-backend.onrender.com");
+const cleanEnvUrl = isDeadDefault ? "" : envUrl;
+
 export const API_BASE =
-  import.meta.env.VITE_API_URL ??
-  import.meta.env.VITE_API_BASE ??
-  "";
+  (typeof window !== "undefined" && localStorage.getItem("aicte_api_base")) ||
+  cleanEnvUrl ||
+  (typeof window !== "undefined" && window.location.hostname.endsWith(".onrender.com")
+    ? "https://aicte-backend-s1vi.onrender.com"
+    : "");
 
 
 export function getToken(): string | null {
@@ -48,8 +55,10 @@ async function apiFetch<T>(
     headers,
   });
   if (res.status === 401) {
-    clearToken();
-    window.location.hash = "#/login";
+    if (!token || !token.startsWith("demo-token-")) {
+      clearToken();
+      window.location.hash = "#/login";
+    }
     throw new Error("Unauthorized");
   }
   if (!res.ok) {
